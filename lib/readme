@@ -1,0 +1,188 @@
+<key>NSApplePayUsageDescription</key>
+    <string>because we are selling id numbers and qr code to to use features</string>
+
+ Get.snackbar(
+          "Already Subscribed",
+          "You already have subscription",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: ConstColors.primaryColor.withOpacity(0.6),
+          colorText: Colors.black,
+          borderRadius: 10,
+          margin: EdgeInsets.all(14),
+          duration: Duration(seconds: 2),
+        );
+
+
+
+
+        <key>NSCameraUsageDescription</key>
+        	<string>HelloHome requires camera access</string>
+        	<key>NSMicrophoneUsageDescription</key>
+        	<string>HelloHome require Microhpone access</string>
+
+
+        	Null check operator used on a null value
+
+        	<key>NSCameraUsageDescription</key>
+            	<string>InAppWebView requires access to cam.</string>
+            	<key>NSMicrophoneUsageDescription</key>
+                	<string>InAppWebView requires access to mic.</string>
+            	<key>NSDocumentsFolderUsageDescription</key>
+            	<string>InAppWebView requires access to documents folder</string>
+            	<key>NSLocalNetworkUsageDescription</key>
+            	<string>Allow Flutter tools on your computer to connect and debug your application.</string>
+            	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+            	<string>Need location</string>
+            	<key>NSLocationAlwaysUsageDescription</key>
+            	<string>Need location</string>
+            	<key>NSLocationWhenInUseUsageDescription</key>
+            	<string>Need location</string>
+
+
+
+
+
+
+
+            	<?xml version="1.0" encoding="UTF-8"?>
+                <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+                <plist version="1.0">
+                <dict>
+                	<key>CFBundleDevelopmentRegion</key>
+                	<string>$(DEVELOPMENT_LANGUAGE)</string>
+                	<key>CFBundleExecutable</key>
+                	<string>$(EXECUTABLE_NAME)</string>
+                	<key>CFBundleIdentifier</key>
+                	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+                	<key>CFBundleInfoDictionaryVersion</key>
+                	<string>6.0</string>
+                	<key>CFBundleName</key>
+                	<string>example</string>
+                	<key>CFBundlePackageType</key>
+                	<string>APPL</string>
+                	<key>CFBundleShortVersionString</key>
+                	<string>$(FLUTTER_BUILD_NAME)</string>
+                	<key>CFBundleSignature</key>
+                	<string>????</string>
+                	<key>CFBundleVersion</key>
+                	<string>$(FLUTTER_BUILD_NUMBER)</string>
+                	<key>LSRequiresIPhoneOS</key>
+                	<true/>
+                	<key>UILaunchStoryboardName</key>
+                	<string>LaunchScreen</string>
+                	<key>UIMainStoryboardFile</key>
+                	<string>Main</string>
+                	<key>UISupportedInterfaceOrientations</key>
+                	<array>
+                		<string>UIInterfaceOrientationPortrait</string>
+                		<string>UIInterfaceOrientationLandscapeLeft</string>
+                		<string>UIInterfaceOrientationLandscapeRight</string>
+                	</array>
+                	<key>UISupportedInterfaceOrientations~ipad</key>
+                	<array>
+                		<string>UIInterfaceOrientationPortrait</string>
+                		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+                		<string>UIInterfaceOrientationLandscapeLeft</string>
+                		<string>UIInterfaceOrientationLandscapeRight</string>
+                	</array>
+                	<key>UIViewControllerBasedStatusBarAppearance</key>
+                	<false/>
+
+                	<!-- Permission options for the `location` group -->
+                    <key>NSLocationWhenInUseUsageDescription</key>
+                    <string>Need location when in use</string>
+                    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+                    <string>Always and when in use!</string>
+                    <key>NSLocationUsageDescription</key>
+                    <string>Older devices need location.</string>
+                    <key>NSLocationAlwaysUsageDescription</key>
+                    <string>Can I have location always?</string>
+
+                    <!-- Permission options for the `mediaLibrary` group -->
+                    <key>NSAppleMusicUsageDescription</key>
+                    <string>Music!</string>
+                    <key>kTCCServiceMediaLibrary</key>
+                    <string>media</string>
+
+                    <!-- Permission options for the `calendar` group -->
+                    <key>NSCalendarsUsageDescription</key>
+                    <string>Calendars</string>
+                    <key>NSCalendarsFullAccessUsageDescription</key>
+                    <string>Calendar full access</string>
+
+                    <!-- Permission options for the `camera` group -->
+                    <key>NSCameraUsageDescription</key>
+                    <string>camera</string>
+
+                    <!-- Permission options for the `contacts` group -->
+                    <key>NSContactsUsageDescription</key>
+                    <string>contacts</string>
+
+                    <!-- Permission options for the `microphone` group -->
+                    <key>NSMicrophoneUsageDescription</key>
+                    <string>microphone</string>
+
+                    <!-- Permission options for the `speech` group -->
+                    <key>NSSpeechRecognitionUsageDescription</key>
+                    <string>speech</string>
+
+                    <!-- Permission options for the `sensors` group -->
+                    <key>NSMotionUsageDescription</key>
+                    <string>motion</string>
+
+                    <!-- Permission options for the `photos` group -->
+                    <key>NSPhotoLibraryUsageDescription</key>
+                    <string>photos</string>
+
+                    <!-- Permission options for the `reminder` group -->
+                    <key>NSRemindersUsageDescription</key>
+                    <string>reminders</string>
+
+                    <!-- Permission options for the `bluetooth` -->
+                    <key>NSBluetoothAlwaysUsageDescription</key>
+                    <string>bluetooth</string>
+                    <key>NSBluetoothPeripheralUsageDescription</key>
+                    <string>bluetooth</string>
+
+                    <!-- Permission options for the `appTrackingTransparency` -->
+                    <key>NSUserTrackingUsageDescription</key>
+                    <string>appTrackingTransparency</string>
+
+                    <!-- Permission options for the `assistant` group -->
+                    <key>NSSiriUsageDescription</key>
+                    <string>The example app would like access to Siri Kit to demonstrate requesting authorization.</string>
+
+                    <key>CADisableMinimumFrameDurationOnPhone</key>
+                    <true/>
+                    <key>UIApplicationSupportsIndirectInputEvents</key>
+                    <true/>
+                </dict>
+                </plist>
+
+
+////
+try {
+  // Show the paywall
+  final paywallResult = await RevenueCatUI.presentPaywallIfNeeded("HH313");
+
+  // Fetch the purchaser info after the paywall interaction
+  final purchaserInfo = await Purchases.getPurchaserInfo();
+
+  // Check if the user has an active subscription entitlement
+  if (purchaserInfo.entitlements.all["your_entitlement_id"]?.isActive == true) {
+    // User successfully subscribed
+    print('User has an active subscription.');
+
+    // Proceed with the backend subscription logic
+    await _subscribePlanIOS(model);
+  } else {
+    // The user didn't complete the purchase
+    if (kDebugMode) {
+      print('User did not complete the purchase.');
+    }
+  }
+
+} catch (e) {
+  // Handle errors related to presenting the paywall
+  print('Error occurred during paywall presentation: $e');
+}

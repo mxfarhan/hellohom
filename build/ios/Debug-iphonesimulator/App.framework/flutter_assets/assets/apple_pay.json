@@ -1,0 +1,11 @@
+{
+  "provider": "apple_pay",
+  "data": {
+    "merchantIdentifier": "merchant.casa.hellohome.nicesolution",
+    "displayName": "Hello Home",
+    "merchantCapabilities": ["3DS", "debit", "credit"],
+    "supportedNetworks": ["visa", "masterCard", "amex"],
+    "countryCode": "EU",
+    "currencyCode": "EUR"
+  }
+}
