@@ -12,6 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:foodly/config/text_style.dart';
 import 'package:foodly/view/auth/signin_screen.dart';
 import 'package:foodly/view/auth/signup_screen.dart';
+import 'package:foodly/view/privacy_policy_webview.dart';
 import 'package:foodly/view/profile/change_language_screen.dart';
 import 'package:foodly/view/profile/faq_screen.dart';
 import 'package:foodly/view/profile/manage_member_screen.dart';
@@ -203,14 +204,14 @@ class _ProfileViewState extends State<ProfileView> {
                               ),
                               ProfileTab(
                                 image: 'assets/images/deluser.svg',
-                                title: "Delete Account",
+                                title: "Supprimer le compte",
                                 subTitle: "",
                                 ontap: () {
                                   // Show iOS-style dialog to confirm or cancel deletion
                                   Get.dialog(
                                     CupertinoAlertDialog(
-                                      title: Text("Confirm Deletion"),
-                                      content: Text("Are you sure! you want to delete your account?"),
+                                      title: Text("Confirmer la suppression"),
+                                      content: Text("Es-tu sûr! tu veux supprimer ton compte ?"),
                                       actions: [
                                         CupertinoDialogAction(
                                           isDefaultAction: true,
@@ -219,7 +220,7 @@ class _ProfileViewState extends State<ProfileView> {
                                             // Close the dialog and cancel deletion
                                             Get.back();
                                           },
-                                          child: const Text("Cancel"),
+                                          child: const Text("Annuler"),
                                         ),
                                         CupertinoDialogAction(
                                           isDestructiveAction: true,
@@ -254,8 +255,8 @@ class _ProfileViewState extends State<ProfileView> {
                                             // Show a snackbar confirming deletion
                                             Get.closeCurrentSnackbar();
                                             Get.snackbar(
-                                              "Deleted",
-                                              "Your account has been deleted",
+                                              "Supprimé",
+                                              "Votre compte a été supprimé",
                                               snackPosition: SnackPosition.BOTTOM,
                                               backgroundColor: ConstColors.primaryColor.withOpacity(0.6),
                                               colorText: Colors.black,
@@ -268,7 +269,7 @@ class _ProfileViewState extends State<ProfileView> {
                                            // model.logOut();
                                            // Get.offAll(() => SignInScreen(model));
                                           },
-                                          child: const Text("Delete"),
+                                          child: const Text("Supprimer"),
                                         ),
                                       ],
                                     ),
@@ -529,6 +530,18 @@ class _ProfileViewState extends State<ProfileView> {
                                       MaterialPageRoute(
                                           builder: (BuildContext context) =>
                                               FAQscreen()));
+                                },
+                              ),
+                              ProfileTab(
+                                image: 'assets/icons/aboutapp.svg',
+                                title: "À propos de l'application",
+                                subTitle: "",
+                                ontap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (BuildContext context) =>PrivacyPolicyWebview()
+                                              ));
                                 },
                               ),
                               ProfileTab(

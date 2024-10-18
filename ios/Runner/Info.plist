@@ -16,20 +16,14 @@
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	<key>com.apple.developer.in-app-payments</key>
-    <array>
-      <string>merchant.casa.hellohome.nicesolution</string>
-    </array>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>HelloHome</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-    <string>Votre image de profil sera utilisée exclusivement sur la page des visiteurs; Elle ne sera en aucun cas exploitée à des fins commerciales ni pour d'autres utilisations non conformes aux lois en vigueur.</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.0</string>
+	<string>1.0.1</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
@@ -42,11 +36,15 @@
 	<array>
 		<string>_dartobservatory._tcp</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Votre image de profil sera utilisée exclusivement sur la page des visiteurs; Elle ne sera en aucun cas exploitée à des fins commerciales ni pour d'autres utilisations non conformes aux lois en vigueur.</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
-		<string>processing</string>
 		<string>remote-notification</string>
+		<string>processing</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
@@ -67,7 +65,9 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
+	<key>com.apple.developer.in-app-payments</key>
+	<array>
+		<string>merchant.casa.hellohome.nicesolution</string>
+	</array>
 </dict>
 </plist>

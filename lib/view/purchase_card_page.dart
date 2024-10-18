@@ -1,12 +1,13 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_paypal/flutter_paypal.dart';
 import 'package:foodly/config/colors.dart';
 import 'dart:async';
 import 'dart:math';
 import 'package:foodly/config/text_style.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:flutter_paypal_checkout/flutter_paypal_checkout.dart';
+//import 'package:flutter_paypal_checkout/flutter_paypal_checkout.dart';
 import 'package:get/get.dart';
 import 'package:randomstring_dart/randomstring_dart.dart';
 
@@ -767,11 +768,12 @@ class _PurchaseCardPageState extends State<PurchaseCardPage> {
 
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(snackBar);
-                                    } else {
+                                    }
+                                    else {
                                       Navigator.of(context)
                                           .push(MaterialPageRoute(
                                         builder: (BuildContext context) =>
-                                            PaypalCheckout(
+                                            UsePaypal(
                                           sandboxMode: false,
                                           clientId: "AV4QNNZ1YsVj6kaQgvwvTWxACzzAKzDYDY93-sc8tg-8rHb2za_pFJ5jBpaLw8kXKFPTrk6bKdYUvYcX",
                                             //  "AY0LwNGUdjsxABMPUbU3yXkUoFRvZmcjIilpldjnf07JS8Cw3xgx4x3IYPaE_LayI1m2w-KWga8gjczy",

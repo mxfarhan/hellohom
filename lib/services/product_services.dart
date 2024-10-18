@@ -82,8 +82,8 @@ mixin ProductService on Model, UserService {
     var dio = Dio();
     dio.options
       ..baseUrl = Constant.baseUrl
-      ..connectTimeout = 10000 //5s
-      ..receiveTimeout = 10000
+      ..connectTimeout = const Duration(seconds: 10) // 10 seconds
+      ..receiveTimeout = const Duration(seconds: 10)
       ..validateStatus = (int? status) {
         return status! > 0;
       }
@@ -92,6 +92,7 @@ mixin ProductService on Model, UserService {
         HttpHeaders.userAgentHeader: 'dio',
         HttpHeaders.authorizationHeader: 'Bearer $token',
       };
+
 
     try {
       var responseData = await dio.get(

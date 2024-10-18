@@ -4,7 +4,7 @@ import 'package:foodly/config/colors.dart';
 import 'dart:async';
 import 'package:foodly/config/text_style.dart';
 import 'package:foodly/config/default_image.dart';
-import 'package:flutter_paypal_checkout/flutter_paypal_checkout.dart';
+//import 'package:flutter_paypal_checkout/flutter_paypal_checkout.dart';
 import 'package:get/get.dart';
 import 'package:foodly/model/product.dart';
 import 'package:scoped_model/scoped_model.dart';

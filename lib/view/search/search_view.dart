@@ -459,7 +459,9 @@ class _SearchViewState extends State<SearchView> {
                                                                               }
                                                                             },
                                                                           ),
-                                                                          Text('Answer')
+                                                                           Text('Répondre',style: pSemiBold18.copyWith(
+                                                                              fontSize: 14,
+                                                                              color: ConstColors.primaryColoredited))
 
                                                                         ],
                                                                       )

@@ -18,7 +18,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"
+  sdk: ">=3.5.0 <4.0.0"
+#  sdk: ">=2.17.0 <3.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -44,11 +45,14 @@ dependencies:
   font_awesome_flutter: ^10.1.0
   image:
   #flutter_chat_ui: ^1.6.6
-  flutter_paypal_checkout: ^1.0.1
+  #flutter_paypal_checkout: ^1.0.1
+ # paypal_payment: ^1.0.0+4
+  flutter_paypal: ^0.2.1
   scoped_model: ^2.0.0
   shared_preferences: ^2.0.13
   shimmer: ^3.0.0
-  dio: ^4.0.6
+  dio: ^5.7.0
+  #dio: ^4.0.6
   flutter_easyloading: ^3.0.5
   firebase_core: ^2.13.1
   firebase_messaging: ^14.7.8
@@ -68,9 +72,9 @@ dependencies:
   #flutter_braintree: ^4.0.0
   purchases_flutter: ^6.30.0
   purchases_ui_flutter: ^6.30.0
-
-
-
+  flutter_inappwebview: ^6.1.5
+  #webview_flutter: ^4.10.0
+  webview_flutter: ^4.8.0
 
 dev_dependencies:
   flutter_test:
@@ -137,6 +141,7 @@ flutter:
     - assets/icons/Travel/
     - assets/icons/Weather/
     - assets/icons/Web and Technology/
+    - assets/icons/aboutapp.svg
     - assets/images/
     - assets/images/deluser.svg
   fonts:

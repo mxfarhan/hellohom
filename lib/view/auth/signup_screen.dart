@@ -514,42 +514,51 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         FocusManager.instance.primaryFocus
                                             ?.unfocus();
 
-                                        // Navigator.push(
-                                        //     context,
-                                        //     MaterialPageRoute(
-                                        //         builder: (BuildContext
-                                        //                 context) =>
-                                        //             PrivacyPolicyWebview()));
-                                        // code to open / launch terms of service link here
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (BuildContext
+                                                        context) =>
+                                                    PrivacyPolicyWebview()));
+                                       // code to open / launch terms of service link here
                                       }),
-                                // TextSpan(
-                                //     text: ' and ',
-                                //     style: TextStyle(
-                                //         fontSize: 18, color: Colors.black),
-                                //     children: <TextSpan>[
-                                //       TextSpan(
-                                //           text: 'Privacy Policy',
-                                //           style: TextStyle(
-                                //               fontSize: 18,
-                                //               color: Colors.black,
-                                //               decoration: TextDecoration.underline),
-                                //           recognizer: TapGestureRecognizer()
-                                //             ..onTap = () {
-                                //               // code to open / launch privacy policy link here
-                                //             })
-                                //     ])
+                                TextSpan(
+                                    text: ' and ',
+                                    style: TextStyle(
+                                        fontSize: 18, color: Colors.black),
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                          text: 'Privacy Policy',
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.black,
+                                              decoration: TextDecoration.underline),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () {
+                                              FocusManager.instance.primaryFocus
+                                                  ?.unfocus();
+
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (BuildContext
+                                                      context) =>
+                                                          PrivacyPolicyWebview()));
+                                              // code to open / launch terms of service link here
+                                            }),
+                                    ])
                               ])),
-                      // Center(
-                      //   child: Text(
-                      //     "By Signing up you agree to our Terms\nConditions & Privacy Policy.",
-                      //     style: pRegular14.copyWith(
-                      //       fontSize: 16,
-                      //       color: ConstColors.text2Color,
-                      //       height: 1.5,
-                      //     ),
-                      //     textAlign: TextAlign.center,
-                      //   ),
-                      // ),
+                      Center(
+                        child: Text(
+                          "By Signing up you agree to our Terms of use & Privacy Policy.",
+                          style: pRegular14.copyWith(
+                            fontSize: 16,
+                            color: ConstColors.text2Color,
+                            height: 1.5,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                       const SizedBox(height: 16),
                       // Center(
                       //   child: Text(

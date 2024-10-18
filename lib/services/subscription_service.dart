@@ -27,8 +27,8 @@ mixin SubscriptionService on Model, UserService {
     var dio = Dio();
     dio.options
       ..baseUrl = Constant.baseUrl
-      ..connectTimeout = 10000 //5s
-      ..receiveTimeout = 10000
+      ..connectTimeout = Duration(seconds: 10) //5s
+      ..receiveTimeout = Duration(seconds: 10)
       ..validateStatus = (int? status) {
         return status! > 0;
       }

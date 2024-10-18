@@ -489,7 +489,7 @@ mixin SocketService on Model, UserService {
 
   static void dispose() {
     _socket!.dispose();
-    // _socket!.destroy();
+    //_socket!.destroy();
     // _socket!.close();
     // _socket!.disconnect();
     // _socketResponse!.close();

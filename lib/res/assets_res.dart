@@ -10,5 +10,6 @@ class AssetsRes {
   static const String PLUGIN_VERSION = '1.0.0+1';
   static const String APPLE_PAY = 'assets/apple_pay.json';
   static const String DARK_MAP_STYLE = 'assets/dark_map_style.json';
+  static const String ABOUTAPP = 'assets/icons/aboutapp.svg';
   static const String DELUSER = 'assets/images/deluser.svg';
 }

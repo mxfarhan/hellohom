@@ -9,6 +9,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_paypal/flutter_paypal.dart';
 //import 'package:flutter_braintree/flutter_braintree.dart';
 import 'package:foodly/config/colors.dart';
 import 'package:foodly/controller/client_token_generator.dart';
@@ -18,7 +19,7 @@ import 'package:intl/intl.dart';
 import 'package:foodly/config/text_style.dart';
 import 'package:intl/intl.dart';
 import 'package:foodly/config/default_image.dart';
-import 'package:flutter_paypal_checkout/flutter_paypal_checkout.dart';
+//import 'package:flutter_paypal_checkout/flutter_paypal_checkout.dart';
 import 'package:get/get.dart';
 import 'package:foodly/model/product.dart';
 import 'package:purchases_flutter/models/price_wrapper.dart';
@@ -36,7 +37,7 @@ import 'package:foodly/widget/custom_textfield.dart';
 class SubscriptionPlanScreen extends StatefulWidget {
   final MainModel model;
 
-   SubscriptionPlanScreen(this.model);
+  SubscriptionPlanScreen(this.model);
 
   @override
   State<SubscriptionPlanScreen> createState() => _SubscriptionPlanScreenState();
@@ -57,10 +58,9 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
     loadData();
   }
 
-
-    Future<void> setupSubscriptionListener(MainModel model) async {
-    if(model.user.accumulatedExpired==0||model.user.accumulatedExpired==null)
-    {
+  Future<void> setupSubscriptionListener(MainModel model) async {
+    if (model.user.accumulatedExpired == 0 ||
+        model.user.accumulatedExpired == null) {
       // Add listener to track subscription updates
       Purchases.addCustomerInfoUpdateListener((purchaserInfo) async {
         // Check if the user has an active subscription
@@ -74,21 +74,19 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
           await _subscribePlanIOS(model);
         }
       });
-    }else{
+    } else {
       if (kDebugMode) {
         print("failed to upload data after purchase");
       }
     }
-    }
-
-
+  }
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
 
-     widget.model.clearMyPurchaseCards();
+    widget.model.clearMyPurchaseCards();
     EasyLoading.removeAllCallbacks();
   }
 
@@ -127,7 +125,8 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
           print("Response subs plan product: $responseData");
         }
         //
-        var responseProduct = await widget.model.fetchSubscriptions(widget.model);
+        var responseProduct =
+            await widget.model.fetchSubscriptions(widget.model);
         if (responseProduct['message'] == 'true') {
           if (kDebugMode) {
             print("Response my subs: $responseProduct");
@@ -150,65 +149,62 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
     }
   }
 
-
-
   Future _subscribePlan(MainModel model, Map paymentData) async {
     _timer?.cancel();
     await EasyLoading.show(maskType: EasyLoadingMaskType.custom);
-      try {
-        var data = {
+    try {
+      var data = {
+        'products_id': _selectSubscriptionPlan.id,
+        'start_date': '${DateTime.now()}',
+        'expired_date':
+            '${DateTime.now().add(Duration(days: _selectSubscriptionPlan.period!))}',
+        'payment_id': model.user.name,
+        'payment_method': paymentData['data']['payer']['payment_method']
+            .toString()
+            .toUpperCase(),
+        'status': "SUCCESS",
+        'price': _selectSubscriptionPlan.price!,
+        'users_id': model.user.id!,
+      };
 
-          'products_id': _selectSubscriptionPlan.id,
-          'start_date': '${DateTime.now()}',
-          'expired_date':
-          '${DateTime.now().add(Duration(days: _selectSubscriptionPlan.period!))}',
-          'payment_id': model.user.name,
-          'payment_method': paymentData['data']['payer']['payment_method']
-              .toString()
-              .toUpperCase(),
-          'status': "SUCCESS",
-          'price': _selectSubscriptionPlan.price!,
-          'users_id': model.user.id!,
+      var responseDataSubs = await model.subscriptionPlan(data);
+      if (responseDataSubs["message"] == 'true') {
+        if (kDebugMode) {
+          print("Response subs plan: $responseDataSubs");
+        }
+
+        var formData = {
+          'name': model.nama,
+          'email': model.user.email,
+          'accumulated_expired': model.user.accumulatedExpired == null ||
+                  model.user.accumulatedExpired == ""
+              ? "${DateFormat('yyyy-MM-dd').format(DateTime.now().add(Duration(days: _selectSubscriptionPlan.period!)))}"
+              : "${DateFormat('yyyy-MM-dd').format(DateTime.parse(model.user.accumulatedExpired!).add(Duration(days: _selectSubscriptionPlan.period!)))}",
         };
 
-        var responseDataSubs = await model.subscriptionPlan(data);
-        if (responseDataSubs["message"] == 'true') {
-          print("Response subs plan: $responseDataSubs");
-
-          var formData = {
-            'name': model.nama,
-            'email': model.user.email,
-            'accumulated_expired': model.user.accumulatedExpired == null ||
-                model.user.accumulatedExpired == ""
-                ? "${DateFormat('yyyy-MM-dd').format(DateTime.now().add(Duration(days: _selectSubscriptionPlan.period!)))}"
-                : "${DateFormat('yyyy-MM-dd').format(DateTime.parse(model.user.accumulatedExpired!).add(Duration(days: _selectSubscriptionPlan.period!)))}",
-          };
-
-          var responseData = await model.editProfile(formData);
-          if (responseData["data"] != null) {
+        var responseData = await model.editProfile(formData);
+        if (responseData["data"] != null) {
+          if (kDebugMode) {
             print("Response edit profile: $responseData");
+          }
 
-            var responseProduct = await model.fetchSubscriptions(model);
+          var responseProduct = await model.fetchSubscriptions(model);
 
-            //
-            if (responseProduct['message'] == 'true') {
+          //
+          if (responseProduct['message'] == 'true') {
+            if (kDebugMode) {
               print("Response my subs: $responseProduct");
-
-              _timer?.cancel();
-              await EasyLoading.dismiss();
-              //
-              _showSuccessDialog();
-              //
-              setState(() {
-                _selectSubscriptionPlan = Product();
-              });
-              //
-            } else {
-              //
-              _timer?.cancel();
-              await EasyLoading.dismiss();
-              //
             }
+
+            _timer?.cancel();
+            await EasyLoading.dismiss();
+            //
+            _showSuccessDialog();
+            //
+            setState(() {
+              _selectSubscriptionPlan = Product();
+            });
+            //
           } else {
             //
             _timer?.cancel();
@@ -216,73 +212,83 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
             //
           }
         } else {
-          print("Unathorized");
-          final snackBar = SnackBar(
-              backgroundColor: Colors.red,
-              duration: Duration(seconds: 3),
-              behavior: SnackBarBehavior.floating,
-              content: Text(
-                model.message,
-                style: TextStyle(fontSize: 14, height: 1.4),
-              ));
-
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
           //
           _timer?.cancel();
           await EasyLoading.dismiss();
+          //
         }
-        // });
-      } catch (e) {
+      } else {
+        if (kDebugMode) {
+          print("Unathorized");
+        }
+        final snackBar = SnackBar(
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+            content: Text(
+              model.message,
+              style: const TextStyle(fontSize: 14, height: 1.4),
+            ));
+
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
         //
         _timer?.cancel();
         await EasyLoading.dismiss();
-        //
-        print("Unathorized");
       }
+      // });
+    } catch (e) {
+      //
+      _timer?.cancel();
+      await EasyLoading.dismiss();
+      //
+      print("Unathorized");
     }
+  }
 
-
-    Future _subscribePlanIOS(MainModel model) async {
+  Future _subscribePlanIOS(MainModel model) async {
     _timer?.cancel();
     await EasyLoading.show(maskType: EasyLoadingMaskType.custom);
     try {
       var data = {
-
         'products_id': _selectSubscriptionPlan.id,
         'start_date': '${DateTime.now()}',
-        'expired_date':
-        '${DateTime.now().add(Duration(days: 365))}',
+        'expired_date': '${DateTime.now().add(const Duration(days: 365))}',
         'payment_id': model.user.name,
         'payment_method': 'In App Subscription',
         'status': "SUCCESS",
-        'email':model.user.email,
-
+        'email': model.user.email,
         'price': _products[0].price.toInt().toStringAsFixed(2),
         'users_id': model.user.id!,
       };
 
       var responseDataSubs = await model.subscriptionPlan(data);
       if (responseDataSubs["message"] == 'true') {
-        print("Response subs plan: $responseDataSubs");
+        if (kDebugMode) {
+          print("Response subs plan: $responseDataSubs");
+        }
 
         var formData = {
           'name': model.nama,
           'email': model.user.email,
           'accumulated_expired': model.user.accumulatedExpired == null ||
-              model.user.accumulatedExpired == ""
+                  model.user.accumulatedExpired == ""
               ? "${DateFormat('yyyy-MM-dd').format(DateTime.now().add(Duration(days: 365)))}"
               : "${DateFormat('yyyy-MM-dd').format(DateTime.parse(model.user.accumulatedExpired!).add(Duration(days: 365)))}",
         };
 
         var responseData = await model.editProfile(formData);
         if (responseData["data"] != null) {
-          print("Response edit profile: $responseData");
+          if (kDebugMode) {
+            print("Response edit profile: $responseData");
+          }
 
           var responseProduct = await model.fetchSubscriptions(model);
 
           //
           if (responseProduct['message'] == 'true') {
-            print("Response my subs: $responseProduct");
+            if (kDebugMode) {
+              print("Response my subs: $responseProduct");
+            }
 
             _timer?.cancel();
             await EasyLoading.dismiss();
@@ -311,11 +317,11 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
         }
         final snackBar = SnackBar(
             backgroundColor: Colors.red,
-            duration: Duration(seconds: 3),
+            duration: const Duration(seconds: 3),
             behavior: SnackBarBehavior.floating,
             content: Text(
               model.message,
-              style: TextStyle(fontSize: 14, height: 1.4),
+              style: const TextStyle(fontSize: 14, height: 1.4),
             ));
 
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -333,15 +339,15 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
         print("Unauthorized");
       }
     }
-    }
+  }
 
-    ///fetch products
+  ///fetch products
   List<StoreProduct> _products = [];
   Future<void> _fetchProducts() async {
     try {
       List<StoreProduct> products = await Purchases.getProducts(['HH313']);
       setState(() {
-        _products = products;  // Set the fetched products to the _products list
+        _products = products; // Set the fetched products to the _products list
       });
       print('test price: ${_products[0].price}');
     } catch (e) {
@@ -360,7 +366,9 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
       isPurchasing = true; // Set flag when starting the purchase
     });
 
-    await EasyLoading.show(status: 'Processing purchase...', maskType: EasyLoadingMaskType.custom); // Show loading spinner
+    await EasyLoading.show(
+        status: 'Processing purchase...',
+        maskType: EasyLoadingMaskType.custom); // Show loading spinner
 
     try {
       if (_products.isNotEmpty) {
@@ -369,11 +377,11 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
         await Purchases.purchaseProduct(_products[0].identifier);
 
         // Check if the purchase was successful
-        if (model.user.accumulatedExpired==0||model.user.accumulatedExpired==null) {
-          setState(() async{
+        if (model.user.accumulatedExpired == 0 ||
+            model.user.accumulatedExpired == null) {
+          setState(() async {
             subscriptionStatus = 'Subscription purchased successfully!';
           });
-
         }
       }
     } catch (e) {
@@ -389,12 +397,8 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
     }
   }
 
-
-
-
   bool isLoading = false;
   String subscriptionStatus = '';
-
 
   @override
   Widget build(BuildContext context) {
@@ -552,7 +556,8 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                             SizedBox(height: 5),
                             Expanded(
                                 child: ListView.builder(
-                              padding: EdgeInsets.only(top: 14, bottom: 10),
+                              padding:
+                                  const EdgeInsets.only(top: 14, bottom: 10),
                               physics: const BouncingScrollPhysics(),
                               itemCount: model.subscriptionList.length,
                               itemBuilder: (context, i) {
@@ -574,7 +579,8 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                                                       height: 50,
                                                       width: 50,
                                                       padding:
-                                                          EdgeInsets.all(8),
+                                                          const EdgeInsets.all(
+                                                              8),
                                                       decoration: BoxDecoration(
                                                           // color: ConstColors.primaryColor,
                                                           gradient:
@@ -620,13 +626,16 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                                                                 .spaceBetween,
                                                         children: [
                                                           Text(
-                                                            "${subs.product?.name}",
+                                                            Platform.isIOS
+                                                                ? (_products[0].title)  // Provide a fallback in case title is null
+                                                                : (subs.product?.name ?? 'Default Name'),
                                                             style: pSemiBold18.copyWith(
                                                                 fontSize: 18,
                                                                 color: ConstColors
                                                                     .primaryColor),
                                                           ),
-                                                          SizedBox(height: 2),
+                                                          const SizedBox(
+                                                              height: 2),
                                                           Text(
                                                             "${subs.product?.description}",
                                                             style: pRegular14
@@ -634,7 +643,8 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                                                               fontSize: 14,
                                                             ),
                                                           ),
-                                                          SizedBox(height: 5),
+                                                          const SizedBox(
+                                                              height: 5),
                                                           Text(
                                                             "will expire on ${DateFormat('MMMM dd, yyyy').format(DateTime.parse(subs.expiredDate!))}",
                                                             style: pRegular14
@@ -647,9 +657,11 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                                                         ],
                                                       ),
                                                     )),
-                                                    SizedBox(width: 10),
+                                                    const SizedBox(width: 10),
                                                     Text(
-                                                      "€${subs.price}",
+                                                      Platform.isIOS
+                                                          ? "€${_products[0].price.toStringAsFixed(2)}"  // Handle null price
+                                                          : "€${subs.price ?? '0'}",
                                                       style:
                                                           pSemiBold18.copyWith(
                                                               fontSize: 18,
@@ -735,8 +747,9 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
       );
     });
   }
+
   void _showPicker(context, MainModel model) {
-    final String tokenizationKey = 'production_8h9cg6qd_c6fsbpck5c25549n';
+    const String tokenizationKey = 'production_8h9cg6qd_c6fsbpck5c25549n';
     showModalBottomSheet(
         backgroundColor: ConstColors.whiteFontColor,
         context: context,
@@ -751,7 +764,7 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
             heightFactor: 0.75,
             child: Container(
               height: MediaQuery.of(context).size.height,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(10),
                       topRight: Radius.circular(10))),
@@ -779,7 +792,7 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                                       color: ConstColors.textColor))),
                         ]),
                   ),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
                   Column(
                       children: model.productList.map((e) {
                     return GestureDetector(
@@ -813,57 +826,69 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                                     ? ConstColors.textColor
                                     : ConstColors.primaryColor,
                                 borderRadius: BorderRadius.circular(10)),
-                            padding: EdgeInsets.only(
+                            padding: const EdgeInsets.only(
                                 left: 20, right: 10, top: 12, bottom: 12),
                             child: Row(
                               children: [
                                 Expanded(
                                     flex: 3,
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                                       children: [
                                         Text(
-                                          "${e.name}",
+                                          Platform.isIOS
+                                              ? (_products[0].title)  // Provide a fallback in case title is null
+                                              : (e.name ?? 'Default Name'),  // Provide a fallback in case e.name is null
                                           style: pSemiBold20.copyWith(
                                             fontSize: 16,
                                             color: ConstColors.whiteFontColor,
                                           ),
                                         ),
                                         Text(
-                                          "${_products[0].price.toStringAsFixed(2)}€",
+                                          Platform.isIOS
+                                              ? "Prix: ${_products[0].price.toStringAsFixed(2)}€"  // Handle null price
+                                              : "Prix: ${e.price ?? '0'}€",  // Handle null e.price
                                           style: pSemiBold20.copyWith(
                                             letterSpacing: 1.7,
                                             fontSize: 20,
                                             color: ConstColors.whiteFontColor,
                                           ),
                                         ),
+                                        // Text(
+                                        //   Platform.isIOS
+                                        //       ? (_products[0].description)  // Provide fallback for null description
+                                        //       : (e.description ?? 'No Description'),  // Handle null e.description
+                                        //   style: pRegular14.copyWith(
+                                        //     fontSize: 14,
+                                        //     color: ConstColors.whiteFontColor,
+                                        //   ),
+                                        // ),
                                         Row(
                                           children: [
                                             Container(
-                                              height: 5,
-                                              width: 5,
+                                              height: 6,
+                                              width: 6,
                                               decoration: BoxDecoration(
-                                                  color: Colors.red,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          100)),
+                                                color: Colors.red,
+                                                borderRadius: BorderRadius.circular(100),
+                                              ),
                                             ),
                                             SizedBox(width: 5),
                                             Text(
-                                              "${e.description}",
-                                              // "monthly fees charged",
+                                              "Durée de l'abonnement : 1 an",
                                               style: pRegular14.copyWith(
-                                                  fontSize: 12,
-                                                  color: ConstColors
-                                                      .whiteFontColor),
+                                                fontSize: 14,
+                                                color: ConstColors.whiteFontColor,
+                                              ),
                                             ),
                                           ],
                                         )
                                       ],
-                                    )),
+                                    )
+
+
+                                ),
                                 Expanded(
                                     flex: 1,
                                     child: SvgPicture.asset(
@@ -875,38 +900,42 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                               ],
                             )));
                   }).toList()),
-                  SizedBox(height: 50),
+                  const SizedBox(height: 50),
                   InkWell(
-                    onTap: () async{
-                      print({
-                        "amount": {
-                          "total": _selectSubscriptionPlan.price,
-                          "currency": "EUR",
-                          "details": {
-                            "subtotal": _selectSubscriptionPlan.price,
-                            "shipping": '0',
-                            "shipping_discount": 0
+                    onTap: () async {
+                      if (kDebugMode) {
+                        print({
+                          "amount": {
+                            "total": _selectSubscriptionPlan.price,
+                            "currency": "EUR",
+                            "details": {
+                              "subtotal": _selectSubscriptionPlan.price,
+                              "shipping": '0',
+                              "shipping_discount": 0
+                            }
+                          },
+                          "description": "${_selectSubscriptionPlan.name}",
+                          "item_list": {
+                            "items": [
+                              {
+                                "name":
+                                    "${_selectSubscriptionPlan.description} - ${_selectSubscriptionPlan.period} Period",
+                                "quantity": 1,
+                                "price": _selectSubscriptionPlan.price,
+                                "currency": "EUR"
+                              },
+                            ],
                           }
-                        },
-                        "description": "${_selectSubscriptionPlan.name}",
-                        "item_list": {
-                          "items": [
-                            {
-                              "name":
-                                  "${_selectSubscriptionPlan.description} - ${_selectSubscriptionPlan.period} Period",
-                              "quantity": 1,
-                              "price": _selectSubscriptionPlan.price,
-                              "currency": "EUR"
-                            },
-                          ],
-                        }
-                      });
+                        });
+                      }
 
                       /// for android where only paypal is used
-                      if (Platform.isAndroid&&_selectSubscriptionPlan.id != null) {
+                      if (Platform.isAndroid &&
+                          _selectSubscriptionPlan.id != null) {
                         Navigator.pop(context);
+
                         Navigator.of(context).push(MaterialPageRoute(
-                          builder: (BuildContext context) => PaypalCheckout(
+                          builder: (BuildContext context) => UsePaypal(
                              sandboxMode: false,
                                           clientId: "AV4QNNZ1YsVj6kaQgvwvTWxACzzAKzDYDY93-sc8tg-8rHb2za_pFJ5jBpaLw8kXKFPTrk6bKdYUvYcX",
                                             //  "AY0LwNGUdjsxABMPUbU3yXkUoFRvZmcjIilpldjnf07JS8Cw3xgx4x3IYPaE_LayI1m2w-KWga8gjczy",
@@ -931,6 +960,8 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                                     "${_selectSubscriptionPlan.name} - ${_selectSubscriptionPlan.period} Period",
                                 "item_list": {
                                   "items": [
+
+
                                     {
                                       "name":
                                           "${_selectSubscriptionPlan.description}",
@@ -965,12 +996,14 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                       }
 
                       /// for IOS where only ApplePay is used
-                      else if (Platform.isIOS && _selectSubscriptionPlan.id != null) {
+                      else if (Platform.isIOS &&
+                          _selectSubscriptionPlan.id != null) {
                         if (kDebugMode) {
                           print('hanipaytest');
                         }
 
                         Navigator.pop(context);
+
                         ///making payments
                         if (kDebugMode) {
                           print('datasentinit');
@@ -981,97 +1014,96 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
                         checkSubscriptionStatus(model);
 
                         //await Purchases.purchaseProduct('HH313');
-                       // await Purchases.getProducts(['HH313']);
+                        // await Purchases.getProducts(['HH313']);
                         ///apple pay
-               //          Navigator.of(context).push(
-               //            MaterialPageRoute(
-               //              builder: (BuildContext context) => Scaffold(
-               //                appBar: AppBar(
-               //                  title: const Text('Apple Payment'),
-               //                ),
-               //                backgroundColor: Colors.white,
-               //                body: ListView(
-               //                  padding: const EdgeInsets.symmetric(horizontal: 20),
-               //                  children: [
-               //                    Text(
-               //                      _selectSubscriptionPlan.name.toString(),
-               //                      style: const TextStyle(
-               //                        fontSize: 20,
-               //                        color: Color(0xff333333),
-               //                        fontWeight: FontWeight.bold,
-               //                      ),
-               //                    ),
-               //                    const SizedBox(height: 5),
-               //                    Text(
-               //                      "\EUR ${_selectSubscriptionPlan.price.toString()}",
-               //                      style: const TextStyle(
-               //                        color: Color(0xff777777),
-               //                        fontSize: 15,
-               //                      ),
-               //                    ),
-               //                    const SizedBox(height: 15),
-               //                    Text(
-               //                      _selectSubscriptionPlan.description.toString(),
-               //                      style: const TextStyle(
-               //                        fontSize: 15,
-               //                        color: Color(0xff333333),
-               //                        fontWeight: FontWeight.bold,
-               //                      ),
-               //                    ),
-               //                    const SizedBox(height: 15),
-               //                    ApplePayButton(
-               //                      paymentConfiguration: PaymentConfiguration.fromJsonString('''
-               // {
-               //    "provider": "apple_pay",
-               //    "data": {
-               //       "merchantIdentifier": "merchant.casa.hellohome.nicesolution",
-               //       "displayName": "HelloHome",
-               //       "merchantCapabilities": ["3DS", "debit", "credit"],
-               //       "supportedNetworks": ["visa", "masterCard", "amex"],
-               //       "countryCode": "FR",
-               //       "currencyCode": "EUR"
-               //    }
-               // }
-               // '''),
-               //                      paymentItems: [
-               //                        PaymentItem(
-               //                          label: _selectSubscriptionPlan.name,
-               //                          amount: _selectSubscriptionPlan.price.toString(), // Ensure formatted correctly
-               //                        )
-               //                      ],
-               //                      style: ApplePayButtonStyle.black,
-               //                      type: ApplePayButtonType.buy,
-               //                      margin: const EdgeInsets.only(top: 15.0),
-               //                      onPaymentResult: (Map params) async {
-               //                        print("onSuccess: $params");
-               //                        await _subscribePlan(model, params);
-               //                      },
-               //                      onError: (error) {
-               //                        print("Error In Payment: ${error.toString()}");
-               //
-               //                        Get.closeCurrentSnackbar();
-               //                        Get.snackbar(
-               //                          "Payment Failed",
-               //                          error.toString(),
-               //                          snackPosition: SnackPosition.BOTTOM,
-               //                          backgroundColor: ConstColors.primaryColor.withOpacity(0.6),
-               //                          colorText: Colors.black,
-               //                          borderRadius: 10,
-               //                          margin: EdgeInsets.all(14),
-               //                          duration: const Duration(seconds: 2),
-               //                        );
-               //                      },
-               //                      loadingIndicator: const Center(
-               //                        child: CircularProgressIndicator(),
-               //                      ),
-               //                    ),
-               //                  ],
-               //                ),
-               //              ),
-               //            ),
-               //          );
+                        //          Navigator.of(context).push(
+                        //            MaterialPageRoute(
+                        //              builder: (BuildContext context) => Scaffold(
+                        //                appBar: AppBar(
+                        //                  title: const Text('Apple Payment'),
+                        //                ),
+                        //                backgroundColor: Colors.white,
+                        //                body: ListView(
+                        //                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                        //                  children: [
+                        //                    Text(
+                        //                      _selectSubscriptionPlan.name.toString(),
+                        //                      style: const TextStyle(
+                        //                        fontSize: 20,
+                        //                        color: Color(0xff333333),
+                        //                        fontWeight: FontWeight.bold,
+                        //                      ),
+                        //                    ),
+                        //                    const SizedBox(height: 5),
+                        //                    Text(
+                        //                      "\EUR ${_selectSubscriptionPlan.price.toString()}",
+                        //                      style: const TextStyle(
+                        //                        color: Color(0xff777777),
+                        //                        fontSize: 15,
+                        //                      ),
+                        //                    ),
+                        //                    const SizedBox(height: 15),
+                        //                    Text(
+                        //                      _selectSubscriptionPlan.description.toString(),
+                        //                      style: const TextStyle(
+                        //                        fontSize: 15,
+                        //                        color: Color(0xff333333),
+                        //                        fontWeight: FontWeight.bold,
+                        //                      ),
+                        //                    ),
+                        //                    const SizedBox(height: 15),
+                        //                    ApplePayButton(
+                        //                      paymentConfiguration: PaymentConfiguration.fromJsonString('''
+                        // {
+                        //    "provider": "apple_pay",
+                        //    "data": {
+                        //       "merchantIdentifier": "merchant.casa.hellohome.nicesolution",
+                        //       "displayName": "HelloHome",
+                        //       "merchantCapabilities": ["3DS", "debit", "credit"],
+                        //       "supportedNetworks": ["visa", "masterCard", "amex"],
+                        //       "countryCode": "FR",
+                        //       "currencyCode": "EUR"
+                        //    }
+                        // }
+                        // '''),
+                        //                      paymentItems: [
+                        //                        PaymentItem(
+                        //                          label: _selectSubscriptionPlan.name,
+                        //                          amount: _selectSubscriptionPlan.price.toString(), // Ensure formatted correctly
+                        //                        )
+                        //                      ],
+                        //                      style: ApplePayButtonStyle.black,
+                        //                      type: ApplePayButtonType.buy,
+                        //                      margin: const EdgeInsets.only(top: 15.0),
+                        //                      onPaymentResult: (Map params) async {
+                        //                        print("onSuccess: $params");
+                        //                        await _subscribePlan(model, params);
+                        //                      },
+                        //                      onError: (error) {
+                        //                        print("Error In Payment: ${error.toString()}");
+                        //
+                        //                        Get.closeCurrentSnackbar();
+                        //                        Get.snackbar(
+                        //                          "Payment Failed",
+                        //                          error.toString(),
+                        //                          snackPosition: SnackPosition.BOTTOM,
+                        //                          backgroundColor: ConstColors.primaryColor.withOpacity(0.6),
+                        //                          colorText: Colors.black,
+                        //                          borderRadius: 10,
+                        //                          margin: EdgeInsets.all(14),
+                        //                          duration: const Duration(seconds: 2),
+                        //                        );
+                        //                      },
+                        //                      loadingIndicator: const Center(
+                        //                        child: CircularProgressIndicator(),
+                        //                      ),
+                        //                    ),
+                        //                  ],
+                        //                ),
+                        //              ),
+                        //            ),
+                        //          );
                       }
-
                     },
                     child: Container(
                       height: 48,
@@ -1112,8 +1144,9 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
 
     try {
       // Show loading spinner while fetching customer info
-      await EasyLoading.show(status: 'Checking subscription status...', maskType: EasyLoadingMaskType.custom);
-
+      await EasyLoading.show(
+          status: 'Checking subscription status...',
+          maskType: EasyLoadingMaskType.custom);
 
       // Fetch the latest customer info
       //CustomerInfo customerInfo = await Purchases.getCustomerInfo();
@@ -1135,29 +1168,30 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
       //     print('User already has an active subscription.');
       //   }
       // } else
-        if (model.user.accumulatedExpired == 0 || model.user.accumulatedExpired == null) {
-          try {
-            // Show the paywall
-            await RevenueCatUI.presentPaywallIfNeeded("HH313");
-             //_subscribePlanIOS(model);
-             await setupSubscriptionListener(model);
-            {
-              // The user either canceled or didn't complete the purchase
-              if (kDebugMode) {
-                print('Purchase was not completed.');
-              }
+      if (model.user.accumulatedExpired == 0 ||
+          model.user.accumulatedExpired == null) {
+        try {
+          // Show the paywall
+          await RevenueCatUI.presentPaywallIfNeeded("HH313");
+          //_subscribePlanIOS(model);
+          await setupSubscriptionListener(model);
+          {
+            // The user either canceled or didn't complete the purchase
+            if (kDebugMode) {
+              print('Purchase was not completed.');
             }
-          } catch (e) {
-            // Handle any unexpected errors
+          }
+        } catch (e) {
+          // Handle any unexpected errors
+          if (kDebugMode) {
             print('Error occurred: $e');
           }
+        }
 
+        //final payWallResult= await RevenueCatUI.presentPaywallIfNeeded("HH313");
 
-          //final payWallResult= await RevenueCatUI.presentPaywallIfNeeded("HH313");
-
-         // Pass the model to makePurchase if needed
-      }
-        else {
+        // Pass the model to makePurchase if needed
+      } else {
         // User has an expired subscription
         Get.snackbar(
           "Already Subscribed",
@@ -1169,7 +1203,9 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
           margin: EdgeInsets.all(14),
           duration: Duration(seconds: 2),
         );
-        print('User has an expired subscription.');
+        if (kDebugMode) {
+          print('User has an expired subscription.');
+        }
       }
     } catch (e) {
       // Handle error if any exception occurs
@@ -1218,8 +1254,6 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
   //   }
   // }
 
-
-
   // Future<void> makePayment() async {
   //
   //   // To store apple payment data
@@ -1256,7 +1290,6 @@ class _SubscriptionPlanScreenState extends State<SubscriptionPlanScreen> {
   //     print('Failed payment');
   //   }
   // }
-
 
   Widget _buildPlaceholderBuyCard(MainModel model) {
     return Container(
